@@ -1,3 +1,5 @@
+local disabled_filetypes = { markdown = true, text = true }
+
 return {
   "saghen/blink.cmp",
   version = "1.*",
@@ -12,14 +14,27 @@ return {
   },
   opts = {
     snippets = { preset = "luasnip" },
-    keymap = { preset = "enter" },
+    keymap = {
+      preset = "enter",
+      ["<C-n>"] = {
+        function(cmp)
+          cmp.show()
+        end,
+        "select_next",
+      },
+    },
     sources = {
-      default = { "lsp", "path", "snippets", "buffer", "codeium" },
+      default = { "lsp", "codeium", "path", "snippets", "buffer" },
       providers = {
-        codeium = { name = "Codeium", module = "codeium.blink", async = true },
+        codeium = { name = "Codeium", module = "codeium.blink", async = true, max_items = 5 },
       },
     },
     completion = {
+      menu = {
+        auto_show = function(ctx)
+          return not disabled_filetypes[vim.bo[ctx.bufnr].filetype]
+        end,
+      },
       documentation = {
         auto_show = true,
         auto_show_delay_ms = 0,
