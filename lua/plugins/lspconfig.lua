@@ -1,15 +1,16 @@
 return {
   "neovim/nvim-lspconfig",
   dependencies = {
-    "hrsh7th/cmp-nvim-lsp",
+    "saghen/blink.cmp",
   },
   config = function()
-    -- local lspconfig = require("lspconfig")
-    local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
     local servers = { "ruff", "pyright", "ts_ls", "svelte", "tailwindcss", "gopls" }
-    for _, lsp in ipairs(servers) do
-      vim.lsp.enable(lsp)
+    local ok, blink = pcall(require, "blink.cmp")
+    if ok then
+      vim.lsp.config("*", { capabilities = blink.get_lsp_capabilities() })
+    end
+    for _, server in ipairs(servers) do
+      vim.lsp.enable(server)
     end
   end,
 }
